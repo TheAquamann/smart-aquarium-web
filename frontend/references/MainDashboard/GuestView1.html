@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aquamonitor Pro - Guest Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "surface-dark": "#1e293b", // Custom surface color consistent with dark theme
+                        "surface-light": "#ffffff",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101622; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232f48; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #324467; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-x-hidden min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-[#232f48] px-6 lg:px-10 py-4 bg-surface-light dark:bg-[#111722] sticky top-0 z-50">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-8 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">water_drop</span>
+</div>
+<h2 class="text-lg lg:text-xl font-bold leading-tight tracking-[-0.015em]">Aquamonitor Pro</h2>
+</div>
+<div class="flex items-center gap-4 lg:gap-8">
+<!-- Role Badge -->
+<div class="hidden sm:flex items-center gap-2 bg-slate-100 dark:bg-[#232f48] px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-slate-500 dark:text-[#92a4c9] text-sm">visibility</span>
+<span class="text-slate-700 dark:text-[#92a4c9] text-xs font-bold uppercase tracking-wider">Guest Mode</span>
+</div>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10 ring-2 ring-primary/20" data-alt="User avatar placeholder with abstract gradient" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDpSWN-6f5oAZg2YyKD2sAkNYDJ1XQ_hakN6as8-mXca_AczWK8GHG-dbJfADNm-o-eT8QH-SxNGODCejY2mDiSuSryKutd_AnqI8gKrT--xRacEYcTF_MIYoc4ECxPlTt_rTnqHXuh6cc6lxr4MFZ5_7rufmYKC98biGJkgdOKAV1PirZBAXVWpAuJ9gneTjmLBWhDaSnWpw44BpYlZf_S1UUZ8T8ttDJvAnQGdIKj0--WRTZRQDFuzeHi-9TdZ5LaQFzcRaJk930");'></div>
+</div>
+</header>
+<!-- Main Content Layout -->
+<main class="flex-1 flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
+<div class="w-full max-w-[1200px] flex flex-col gap-8">
+<!-- Page Heading & Context -->
+<div class="flex flex-wrap justify-between items-end gap-4">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<h1 class="text-3xl lg:text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Main Dashboard</h1>
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+</span>
+</div>
+<p class="text-slate-500 dark:text-[#92a4c9] text-sm font-medium">Read-only view • Last updated: Just now</p>
+</div>
+<!-- Alert Area (Subtle) -->
+<div class="bg-blue-50 dark:bg-[#151f32] border border-blue-100 dark:border-[#232f48] rounded-lg px-4 py-3 flex items-center gap-3 max-w-md">
+<span class="material-symbols-outlined text-primary text-xl">info</span>
+<p class="text-sm text-slate-600 dark:text-[#92a4c9]">System is operating normally. Next feeding cycle at 18:00.</p>
+</div>
+</div>
+<!-- Top Row: Critical Metrics Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Temperature Card (Hero) -->
+<div class="bg-white dark:bg-[#1e293b] rounded-xl p-6 shadow-sm border border-slate-100 dark:border-[#232f48] flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-8xl text-primary">thermostat</span>
+</div>
+<div class="flex justify-between items-start z-10">
+<p class="text-slate-500 dark:text-[#92a4c9] text-base font-medium">Water Temperature</p>
+<span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold px-2 py-1 rounded flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +0.5%
+                        </span>
+</div>
+<div class="flex flex-col gap-1 mt-4 z-10">
+<p class="text-slate-900 dark:text-white text-5xl font-extrabold tracking-tight">25.4<span class="text-2xl text-slate-400 dark:text-slate-500">°C</span></p>
+<p class="text-slate-400 dark:text-slate-500 text-sm">Target: 25.0°C - 26.0°C</p>
+</div>
+<!-- Mini sparkline decoration -->
+<div class="h-10 w-full mt-4 flex items-end gap-1 opacity-50">
+<div class="w-1/6 bg-primary/20 h-4 rounded-sm"></div>
+<div class="w-1/6 bg-primary/30 h-6 rounded-sm"></div>
+<div class="w-1/6 bg-primary/40 h-5 rounded-sm"></div>
+<div class="w-1/6 bg-primary/60 h-8 rounded-sm"></div>
+<div class="w-1/6 bg-primary/50 h-7 rounded-sm"></div>
+<div class="w-1/6 bg-primary h-6 rounded-sm"></div>
+</div>
+</div>
+<!-- Light Intensity Card -->
+<div class="bg-white dark:bg-[#1e293b] rounded-xl p-6 shadow-sm border border-slate-100 dark:border-[#232f48] flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg text-yellow-600 dark:text-yellow-400">
+<span class="material-symbols-outlined">light_mode</span>
+</div>
+<p class="text-slate-500 dark:text-[#92a4c9] text-base font-medium">Light Intensity</p>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-slate-900 dark:text-white text-3xl font-bold">850 <span class="text-lg text-slate-400 dark:text-slate-500 font-normal">Lux</span></p>
+<p class="text-slate-400 dark:text-slate-500 text-sm">Daylight Cycle (Active)</p>
+</div>
+<!-- Visual representation of brightness -->
+<div class="w-full bg-slate-100 dark:bg-[#324467] rounded-full h-2 mt-auto">
+<div class="bg-yellow-500 h-2 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<!-- Water Level Card -->
+<div class="bg-white dark:bg-[#1e293b] rounded-xl p-6 shadow-sm border border-slate-100 dark:border-[#232f48] flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg text-primary">
+<span class="material-symbols-outlined">water</span>
+</div>
+<p class="text-slate-500 dark:text-[#92a4c9] text-base font-medium">Water Level</p>
+</div>
+<p class="text-slate-900 dark:text-white text-lg font-bold">92%</p>
+</div>
+<div class="flex-1 flex items-center">
+<div class="w-full flex flex-col gap-2">
+<div class="rounded-full bg-slate-100 dark:bg-[#324467] h-4 w-full overflow-hidden">
+<div class="h-full bg-primary rounded-full relative overflow-hidden" style="width: 92%;">
+<div class="absolute inset-0 bg-white/20 w-full h-full animate-pulse"></div>
+</div>
+</div>
+<div class="flex justify-between text-xs text-slate-400 dark:text-slate-500 font-medium">
+<span>Low</span>
+<span>Optimal</span>
+<span>High</span>
+</div>
+</div>
+</div>
+<p class="text-slate-400 dark:text-[#92a4c9] text-sm">Status: <span class="text-green-500 font-bold">Normal</span></p>
+</div>
+</div>
+<!-- Middle Section: Equipment Status -->
+<div class="flex flex-col gap-4">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold px-1">Equipment Status</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Air Pump -->
+<div class="bg-white dark:bg-[#1e293b] rounded-lg p-4 border border-slate-100 dark:border-[#232f48] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-slate-100 dark:bg-[#232f48] p-2 rounded text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">air</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-medium">Air Pump</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Main Tank</p>
+</div>
+</div>
+<div class="bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+<span class="size-1.5 rounded-full bg-green-500"></span>
+                            Active
+                        </div>
+</div>
+<!-- Filter System -->
+<div class="bg-white dark:bg-[#1e293b] rounded-lg p-4 border border-slate-100 dark:border-[#232f48] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-slate-100 dark:bg-[#232f48] p-2 rounded text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">filter_alt</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-medium">Filter</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Canister 1</p>
+</div>
+</div>
+<div class="bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+<span class="size-1.5 rounded-full bg-green-500"></span>
+                            Active
+                        </div>
+</div>
+<!-- Heater -->
+<div class="bg-white dark:bg-[#1e293b] rounded-lg p-4 border border-slate-100 dark:border-[#232f48] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-slate-100 dark:bg-[#232f48] p-2 rounded text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">heat</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-medium">Heater</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Main Tank</p>
+</div>
+</div>
+<div class="bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+<span class="size-1.5 rounded-full bg-slate-400"></span>
+                            Idle
+                        </div>
+</div>
+<!-- Feeder -->
+<div class="bg-white dark:bg-[#1e293b] rounded-lg p-4 border border-slate-100 dark:border-[#232f48] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-slate-100 dark:bg-[#232f48] p-2 rounded text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">restaurant</span>
+</div>
+<div>
+<p class="text-slate-900 dark:text-white font-medium">Feeder</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Auto-dispense</p>
+</div>
+</div>
+<div class="bg-blue-50 dark:bg-blue-900/10 text-primary dark:text-blue-300 text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">schedule</span>
+                            18:00
+                        </div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Temperature History Chart -->
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center px-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">Temperature History (24h)</h3>
+<div class="flex gap-2">
+<span class="text-xs font-medium px-3 py-1 bg-primary text-white rounded-full cursor-default">24h</span>
+<span class="text-xs font-medium px-3 py-1 text-slate-500 dark:text-slate-400 bg-transparent hover:bg-slate-100 dark:hover:bg-[#232f48] rounded-full cursor-not-allowed opacity-50">7d</span>
+<span class="text-xs font-medium px-3 py-1 text-slate-500 dark:text-slate-400 bg-transparent hover:bg-slate-100 dark:hover:bg-[#232f48] rounded-full cursor-not-allowed opacity-50">30d</span>
+</div>
+</div>
+<div class="bg-white dark:bg-[#1e293b] rounded-xl p-6 border border-slate-100 dark:border-[#232f48] h-64 sm:h-80 w-full flex flex-col">
+<div class="flex-1 w-full relative">
+<!-- Chart Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between text-xs text-slate-400 dark:text-slate-600 pointer-events-none z-0">
+<div class="border-b border-dashed border-slate-200 dark:border-slate-700 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-700 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-700 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-700 w-full h-0"></div>
+<div class="border-b border-dashed border-slate-200 dark:border-slate-700 w-full h-0"></div>
+</div>
+<!-- Chart SVG -->
+<svg class="absolute inset-0 w-full h-full z-10" preserveaspectratio="none" viewbox="0 0 100 100">
+<defs>
+<lineargradient id="gradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#1152d4" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#1152d4" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Area fill -->
+<path d="M0,70 Q10,65 20,68 T40,60 T60,50 T80,55 T100,45 V100 H0 Z" fill="url(#gradient)" stroke="none"></path>
+<!-- Line -->
+<path d="M0,70 Q10,65 20,68 T40,60 T60,50 T80,55 T100,45" fill="none" stroke="#1152d4" stroke-linecap="round" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<!-- Points -->
+<circle cx="20" cy="68" fill="#1152d4" r="1.5" vector-effect="non-scaling-stroke"></circle>
+<circle cx="40" cy="60" fill="#1152d4" r="1.5" vector-effect="non-scaling-stroke"></circle>
+<circle cx="60" cy="50" fill="#1152d4" r="1.5" vector-effect="non-scaling-stroke"></circle>
+<circle cx="80" cy="55" fill="#1152d4" r="1.5" vector-effect="non-scaling-stroke"></circle>
+<circle cx="100" cy="45" fill="#ffffff" r="3" stroke="#1152d4" stroke-width="2" vector-effect="non-scaling-stroke"></circle>
+</svg>
+<!-- Tooltip simulation -->
+<div class="absolute right-0 top-[40%] transform translate-x-1/4 -translate-y-full bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-lg z-20 hidden md:block">
+                            25.4°C
+                            <div class="absolute bottom-[-4px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-slate-800"></div>
+</div>
+</div>
+<!-- X-Axis Labels -->
+<div class="flex justify-between mt-4 text-xs text-slate-400 dark:text-slate-500 font-medium px-1">
+<span>00:00</span>
+<span>04:00</span>
+<span>08:00</span>
+<span>12:00</span>
+<span>16:00</span>
+<span>20:00</span>
+<span>Now</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-8 py-6 border-t border-slate-200 dark:border-[#232f48] bg-surface-light dark:bg-[#101622]">
+<div class="w-full max-w-[1200px] mx-auto px-6 text-center text-sm text-slate-400 dark:text-slate-600">
+            © 2024 Aquamonitor Pro. All rights reserved. Guest Access Level.
+        </div>
+</footer>
+</body></html>

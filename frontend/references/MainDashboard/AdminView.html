@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AquaMonitor Pro - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1152d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                        "card-dark": "#192233",
+                        "card-border": "#232f48",
+                        "text-secondary": "#92a4c9"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<div class="border-b border-card-border bg-card-dark/50 backdrop-blur-md sticky top-0 z-50">
+<div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+<header class="flex items-center justify-between h-16">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary/20 rounded-lg text-primary">
+<span class="material-symbols-outlined text-2xl">waves</span>
+</div>
+<div class="flex flex-col">
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight">AquaMonitor Pro</h2>
+<span class="text-[10px] uppercase font-bold text-primary tracking-wider bg-primary/10 w-fit px-1.5 rounded text-center">Admin Access</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center h-10 w-10 rounded-lg hover:bg-card-border transition-colors text-text-secondary hover:text-white">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-6 w-px bg-card-border mx-1"></div>
+<button class="flex items-center gap-2 h-10 px-3 rounded-lg hover:bg-card-border transition-colors group">
+<div class="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center text-white font-bold text-xs" data-alt="User profile avatar gradient">
+                            JD
+                        </div>
+<span class="text-sm font-medium text-white hidden sm:block group-hover:text-blue-200">John Doe</span>
+<span class="material-symbols-outlined text-text-secondary text-sm">expand_more</span>
+</button>
+<button class="flex items-center justify-center h-10 w-10 rounded-lg bg-card-border text-white hover:bg-card-border/80 transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+</div>
+</div>
+<!-- Main Content -->
+<main class="flex-grow p-4 sm:p-6 lg:p-8 max-w-[1280px] mx-auto w-full flex flex-col gap-6">
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold tracking-tight text-white mb-2">Dashboard</h1>
+<p class="text-text-secondary text-sm">Real-time monitoring for <span class="text-white font-medium">Main Tank 01</span></p>
+</div>
+<div class="flex items-center gap-2 text-xs font-medium text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+                System Operational
+            </div>
+</div>
+<!-- Top Section: Hero Metric + Chart -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Hero Metric Card (Temperature) -->
+<div class="lg:col-span-1 bg-card-dark border border-card-border rounded-xl p-6 flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[120px] text-primary">thermostat</span>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-text-secondary text-xl">device_thermostat</span>
+<h3 class="text-text-secondary font-medium">Water Temperature</h3>
+</div>
+<div class="mt-4 flex items-baseline gap-2">
+<span class="text-6xl font-black text-white tracking-tighter">26.5</span>
+<span class="text-2xl font-medium text-text-secondary">°C</span>
+</div>
+<div class="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+0.2% from last hour</span>
+</div>
+</div>
+<div class="relative z-10 mt-8">
+<div class="flex justify-between text-sm text-text-secondary mb-2">
+<span>Range</span>
+<span class="text-white">24°C - 28°C</span>
+</div>
+<div class="w-full bg-card-border rounded-full h-1.5">
+<div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-1.5 rounded-full" style="width: 65%"></div>
+</div>
+<p class="text-xs text-text-secondary mt-2 text-right">Optimal Status</p>
+</div>
+</div>
+<!-- Historical Data Chart -->
+<div class="lg:col-span-2 bg-card-dark border border-card-border rounded-xl p-6 flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h3 class="text-white font-bold text-lg">Temperature Stability</h3>
+<p class="text-text-secondary text-xs">Last 24 Hours</p>
+</div>
+<select class="bg-background-dark border border-card-border text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-primary">
+<option>24 Hours</option>
+<option>7 Days</option>
+<option>30 Days</option>
+</select>
+</div>
+<div class="flex-1 min-h-[200px] w-full relative">
+<!-- Custom SVG Chart -->
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 800 200">
+<defs>
+<lineargradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#1152d4" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#1152d4" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Lines -->
+<line stroke="#232f48" stroke-dasharray="4" stroke-width="1" x1="0" x2="800" y1="50" y2="50"></line>
+<line stroke="#232f48" stroke-dasharray="4" stroke-width="1" x1="0" x2="800" y1="100" y2="100"></line>
+<line stroke="#232f48" stroke-dasharray="4" stroke-width="1" x1="0" x2="800" y1="150" y2="150"></line>
+<!-- Chart Line -->
+<path d="M0,120 C50,115 100,130 150,125 C200,120 250,90 300,95 C350,100 400,110 450,105 C500,100 550,80 600,85 C650,90 700,95 750,90 L800,85 L800,200 L0,200 Z" fill="url(#chartGradient)"></path>
+<path d="M0,120 C50,115 100,130 150,125 C200,120 250,90 300,95 C350,100 400,110 450,105 C500,100 550,80 600,85 C650,90 700,95 750,90 L800,85" fill="none" stroke="#1152d4" stroke-linecap="round" stroke-width="3"></path>
+<!-- Data Points -->
+<circle cx="300" cy="95" fill="#1152d4" r="4" stroke="white" stroke-width="2"></circle>
+<circle cx="600" cy="85" fill="#1152d4" r="4" stroke="white" stroke-width="2"></circle>
+</svg>
+<!-- Tooltip approximation -->
+<div class="absolute top-[35%] left-[37%] bg-background-dark border border-card-border p-2 rounded shadow-xl pointer-events-none transform -translate-x-1/2 -translate-y-1/2 hidden sm:block">
+<p class="text-white text-xs font-bold">26.1°C</p>
+<p class="text-text-secondary text-[10px]">14:00 PM</p>
+</div>
+</div>
+<div class="flex justify-between text-xs text-text-secondary mt-2 px-2">
+<span>00:00</span>
+<span>06:00</span>
+<span>12:00</span>
+<span>18:00</span>
+<span>23:59</span>
+</div>
+</div>
+</div>
+<!-- Status Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Lighting Card -->
+<div class="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="bg-yellow-500/10 p-2.5 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">wb_sunny</span>
+</div>
+<span class="bg-card-border px-2 py-0.5 rounded text-[10px] text-text-secondary font-medium uppercase">Daylight</span>
+</div>
+<div>
+<h4 class="text-text-secondary text-sm font-medium mb-1">Lighting Intensity</h4>
+<p class="text-2xl font-bold text-white">850 <span class="text-base font-normal text-text-secondary">Lux</span></p>
+</div>
+</div>
+<!-- Water Level Card -->
+<div class="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="bg-blue-500/10 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">water_drop</span>
+</div>
+<span class="bg-card-border px-2 py-0.5 rounded text-[10px] text-text-secondary font-medium uppercase">Normal</span>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<h4 class="text-text-secondary text-sm font-medium">Water Level</h4>
+<p class="text-xl font-bold text-white">92%</p>
+</div>
+<div class="w-full bg-card-border rounded-full h-2">
+<div class="bg-blue-500 h-2 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" style="width: 92%"></div>
+</div>
+</div>
+</div>
+<!-- Air Pump Card -->
+<div class="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="bg-cyan-500/10 p-2.5 rounded-lg text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">air</span>
+</div>
+<!-- Toggle Switch -->
+<button aria-checked="true" class="w-11 h-6 bg-primary rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-dark" role="switch">
+<span class="sr-only">Toggle Air Pump</span>
+<span class="absolute right-1 top-1 bg-white w-4 h-4 rounded-full transition-transform"></span>
+</button>
+</div>
+<div>
+<h4 class="text-text-secondary text-sm font-medium mb-1">Air Pump Status</h4>
+<p class="text-lg font-bold text-emerald-400 flex items-center gap-1">
+                        Active
+                        <span class="block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+</p>
+</div>
+</div>
+<!-- Feeding Schedule Card -->
+<div class="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="bg-purple-500/10 p-2.5 rounded-lg text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+<span class="bg-card-border px-2 py-0.5 rounded text-[10px] text-text-secondary font-medium uppercase">Auto</span>
+</div>
+<div class="flex flex-col gap-2">
+<div>
+<h4 class="text-text-secondary text-sm font-medium mb-0.5">Next Feeding</h4>
+<p class="text-white font-bold">In 2 hours</p>
+</div>
+<button class="mt-1 w-full py-1.5 px-3 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-xs font-bold rounded transition-colors flex items-center justify-center gap-1 shadow-lg shadow-blue-900/20">
+<span class="material-symbols-outlined text-sm">restaurant</span>
+                        Feed Now
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer / System Health -->
+<footer class="mt-auto border-t border-card-border bg-card-dark py-4">
+<div class="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-text-secondary">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-emerald-500">wifi</span>
+<span>Wi-Fi: <span class="text-white">Connected (5GHz)</span></span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">sync</span>
+<span>Last Sync: <span class="text-white">Just now</span></span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<span>System Version: v2.4.1</span>
+<span>•</span>
+<span>Server Status: <span class="text-emerald-500">Healthy</span></span>
+</div>
+</div>
+</footer>
+</body></html>
