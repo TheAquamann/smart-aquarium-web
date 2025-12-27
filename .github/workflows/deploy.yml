@@ -1,8 +1,8 @@
-name: Deploy Frontend to Pages
+name: Build and Deploy Frontend
 
 on:
   push:
-    branches: ["main"] # Runs every time you push to main
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -10,11 +10,25 @@ permissions:
   id-token: write
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          # This tells npm where to find your package.json
+          cache-dependency-path: './frontend/package-lock.json'
+
+      - name: Install dependencies and Build
+        run: |
+          cd frontend
+          npm install
+          npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -22,8 +36,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # This tells GitHub to only look inside your frontend folder
-          path: './frontend'
+          # Change 'dist' to 'build' if you are using Create React App
+          path: './frontend/dist' 
 
       - name: Deploy to GitHub Pages
         id: deployment
