@@ -29,11 +29,11 @@ jobs:
           cd frontend
           npm install
           npm run build
+          cp dist/index.html dist/404.html
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          cp dist/index.html dist/404.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
