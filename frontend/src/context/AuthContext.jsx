@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { api } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -72,12 +73,8 @@ export const AuthProvider = ({ children }) => {
       console.log("Fetching role via Backend API for:", userId);
       
       // 1. Call Backend API (Proxies to Supabase Service Role)
-      const response = await fetch(`http://localhost:3000/api/auth/role/${userId}`);
-      if (!response.ok) {
-          throw new Error(`Backend check failed: ${response.statusText}`);
-      }
-      
-      const { role } = await response.json();
+      const data = await api.getUserRole(userId);
+      const { role } = data;
       console.log("Backend determined role:", role);
       
       setUser({ id: userId, role });

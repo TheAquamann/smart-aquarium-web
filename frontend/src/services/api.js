@@ -80,4 +80,11 @@ export const api = {
     if (res.status === 401) throw new Error('Session Expired');
     return res.json();
   },
+
+  // Auth
+  getUserRole: async (userId) => {
+    const res = await fetch(`${API_URL}/auth/role/${userId}`);
+    if (!res.ok) throw new Error('Failed to fetch role');
+    return res.json();
+  },
 };
