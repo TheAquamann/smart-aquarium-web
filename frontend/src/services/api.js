@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : 'https://smart-aquarium-web.vercel.app/api');
 
 // Helper to get auth headers via Supabase Client (Reliable)
 const getHeaders = async () => {
