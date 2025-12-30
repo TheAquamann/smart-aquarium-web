@@ -1,8 +1,17 @@
+import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Waves, Bell, Settings, ChevronDown } from 'lucide-react';
+import { Waves, ChevronDown, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const AdminLayout = ({ children }) => {
-  const { user, toggleRole } = useAuth();
+  const { user, toggleRole, signOut } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/login');
+  };
   
   return (
     <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
@@ -26,21 +35,54 @@ const AdminLayout = ({ children }) => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <button className="flex items-center justify-center h-10 w-10 rounded-lg hover:bg-card-border transition-colors text-text-secondary hover:text-white">
-                <Bell className="w-5 h-5" />
-              </button>
+            <div className="flex items-center gap-3 relative">
               <div className="h-6 w-px bg-card-border mx-1"></div>
-              <button className="flex items-center gap-2 h-10 px-3 rounded-lg hover:bg-card-border transition-colors group">
-                <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center text-white font-bold text-xs">
-                  JD
-                </div>
-                <span className="text-sm font-medium text-white hidden sm:block group-hover:text-blue-200">{user.name}</span>
-                <ChevronDown className="w-4 h-4 text-text-secondary" />
-              </button>
-              <button className="flex items-center justify-center h-10 w-10 rounded-lg bg-card-border text-white hover:bg-card-border/80 transition-colors">
-                <Settings className="w-5 h-5" />
-              </button>
+              
+              <div className="relative">
+                {user.role === 'viewer' && !user.id ? (
+                    // 1. Guest View: Show Sign In Button
+                    <button 
+                      onClick={() => navigate('/login')}
+                      className="flex items-center gap-2 h-10 px-4 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all text-sm font-medium"
+                    >
+                      Sign In
+                    </button>
+                ) : (
+                    // 2. Logged In View (Admin or Authenticated Viewer) can verify via user.id check or session check
+                    // We rely on user.id or session from context usually, but here checking user.id is safe enough if auth flow sets it
+                    // Actually checking 'session' from useAuth is better if we exposed it. 
+                    // Let's use the toggle logic: if we are in 'viewer' mode but logged in, we still show profile.
+                    // The best check is: do we have a session?
+                   
+                   <button 
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="flex items-center gap-2 h-10 px-3 rounded-lg hover:bg-card-border transition-colors group"
+                    >
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center text-white font-bold text-xs">
+                        {user.name ? user.name.charAt(0).toUpperCase() : 'A'}
+                      </div>
+                      <span className="text-sm font-medium text-white hidden sm:block group-hover:text-blue-200">{user.name || 'Admin'}</span>
+                      <ChevronDown className={`w-4 h-4 text-text-secondary transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                )}
+
+                {/* Dropdown Menu - Only render if logged in */}
+                {isDropdownOpen && (user.id) && (
+                  <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-card-dark border border-card-border shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="px-4 py-3 border-b border-card-border mb-1">
+                      <p className="text-sm text-white font-medium">{user.name || 'User'}</p>
+                      <p className="text-xs text-text-secondary capitalize">{user.role}</p>
+                    </div>
+                    <button 
+                      onClick={handleSignOut}
+                      className="w-full text-left px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </header>
         </div>

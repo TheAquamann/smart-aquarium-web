@@ -1,0 +1,168 @@
+# Smart Aquarium API Documentation
+
+## Overview
+This API allows communication between the Smart Aquarium Frontend, the Backend Server, and the IoT Device (ESP32). It provides endpoints for monitoring sensor data, controlling device state (pump, lights, feeder), and managing system status.
+
+## Base URL
+\`http://localhost:3000/api\`
+
+## Authentication
+Protected endpoints require a valid Supabase JWT Token.
+- **Header**: \`Authorization: Bearer <TOKEN>\`
+
+---
+
+## 1. Sensors (`/api/sensors`)
+
+### Get Latest Readings
+Returns the most recent sensor values and current device state.
+- **Endpoint**: \`GET /latest\`
+- **Access**: Public
+- **Response**:
+  \`\`\`json
+  {
+    "temperature": 26.5,
+    "brightness": 80,
+    "water_level": 85,
+    "pump_status": "ON",
+    "feeding": {
+      "next_feeding": "2024-03-20T14:00:00Z",
+      "interval": "24h",
+      "quantity": 2,
+      "last_fed": "2024-03-19T14:00:00Z"
+    },
+    "last_updated": "2024-03-20T10:30:00Z"
+  }
+  \`\`\`
+
+### Get Sensor History
+Returns historical sensor data for charting.
+- **Endpoint**: \`GET /history\`
+- **Access**: Public
+- **Response**:
+  \`\`\`json
+  {
+    "data": [
+      {
+        "created_at": "2024-03-20T10:00:00Z",
+        "temperature": 26.5,
+        "water_level": 85
+      },
+      ...
+    ]
+  }
+  \`\`\`
+
+### Upload Sensor Data (IoT Device)
+Used by the ESP32 to push new readings.
+- **Endpoint**: \`POST /upload\`
+- **Access**: Public (Internal Network)
+- **Body**:
+  \`\`\`json
+  {
+    "temperature": 26.5,
+    "water_level": 90
+  }
+  \`\`\`
+- **Response**: \`{ "success": true }\`
+
+---
+
+## 2. Control (`/api/control`)
+
+All Control endpoints require **Admin Authentication**.
+
+### Toggle Air Pump
+Turn the air pump ON or OFF.
+- **Endpoint**: \`POST /pump\`
+- **Header**: \`Authorization: Bearer <TOKEN>\`
+- **Body**:
+  \`\`\`json
+  { "state": true }  // true = ON, false = OFF
+  \`\`\`
+- **Response**:
+  \`\`\`json
+  {
+    "status": "queued",
+    "command": { "type": "PUMP", "value": true }
+  }
+  \`\`\`
+
+### Trigger Feeding
+Trigger an immediate feeding cycle.
+- **Endpoint**: \`POST /feed\`
+- **Header**: \`Authorization: Bearer <TOKEN>\`
+- **Body**: \`{ "action": "FEED" }\`
+- **Response**: \`{ "status": "queued" }\`
+
+### Set Brightness
+Adjust the LED light brightness (0-100).
+- **Endpoint**: \`POST /brightness\`
+- **Header**: \`Authorization: Bearer <TOKEN>\`
+- **Body**:
+  \`\`\`json
+  { "value": 75 }
+  \`\`\`
+- **Response**:
+  \`\`\`json
+  {
+    "status": "queued",
+    "command": { "type": "LIGHT", "value": 75 }
+  }
+  \`\`\`
+
+### Update Feeding Settings
+Configure automatic feeding schedule.
+- **Endpoint**: \`POST /feeding-settings\`
+- **Header**: \`Authorization: Bearer <TOKEN>\`
+- **Body**:
+  \`\`\`json
+  {
+    "interval": "12 Hours",
+    "quantity": 2
+  }
+  \`\`\`
+- **Response**: \`{ "success": true, "command": { ... } }\`
+
+### Get Latest Command (IoT Device)
+Used by ESP32 to poll for pending commands (Long Polling).
+- **Endpoint**: \`GET /latest\`
+- **Response**:
+  \`\`\`json
+  {
+    "has_command": true,
+    "command": {
+      "type": "PUMP",
+      "value": "ON"
+    }
+  }
+  \`\`\`
+
+---
+
+## 3. System (`/api/system`)
+
+### Get System Status
+Check if the backend and database are reachable.
+- **Endpoint**: \`GET /status\`
+- **Access**: Public
+- **Response**:
+  \`\`\`json
+  {
+    "esp32_online": true,
+    "last_seen": "2024-03-20T10:30:00Z"
+  }
+  \`\`\`
+
+---
+
+## 4. Authentication (`/api/auth`)
+
+### Check User Role
+Securely verify if a user has Admin privileges.
+- **Endpoint**: \`GET /role/:userId\`
+- **Access**: Public (Service Role check internal)
+- **Response**:
+  \`\`\`json
+  { "role": "admin" } // or "viewer"
+  \`\`\`

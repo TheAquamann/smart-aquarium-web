@@ -3,25 +3,32 @@ import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import AdminLayout from './components/layout/AdminLayout';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import ToastContainer from './components/ui/Toast';
+
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
     <AuthProvider>
-      <Router basename={import.meta.env.BASE_URL}>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          
-          {/* Protected Dashboard Routes */}
-          <Route path="/dashboard" element={
-            <AdminLayout>
-              <Dashboard />
-            </AdminLayout>
-          } />
-          
-          {/* Redirect root to dashboard (mock auth) */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        </Routes>
-      </Router>
+      <ToastProvider>
+        <Router basename={import.meta.env.BASE_URL}>
+          <ToastContainer />
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            
+            {/* Public Dashboard Route (Viewer Mode by default) */}
+            <Route path="/" element={
+                <AdminLayout>
+                  <Dashboard />
+                </AdminLayout>
+            } />
+            
+            {/* Legacy redirect just in case */}
+            <Route path="/dashboard" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </ToastProvider>
     </AuthProvider>
   );
 }

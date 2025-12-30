@@ -1,8 +1,40 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Droplets, Shield } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { signIn, session } = useAuth();
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  // Redirect if already logged in
+  React.useEffect(() => {
+    if (session) {
+      navigate('/dashboard');
+    }
+  }, [session, navigate]);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      await signIn(email, password);
+      toast.success('Welcome back!');
+      navigate('/');
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden relative min-h-screen flex flex-col items-center justify-center">
@@ -37,7 +69,7 @@ const LoginPage = () => {
             <p className="text-slate-400 text-sm font-normal leading-relaxed">Sign in to monitor your smart aquarium ecosystem.</p>
           </div>
 
-          <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col gap-5" onSubmit={handleLogin}>
             {/* Email Field */}
             <div className="flex flex-col gap-2">
               <label className="text-slate-300 text-sm font-medium leading-normal" htmlFor="email">Email Address</label>
@@ -46,7 +78,10 @@ const LoginPage = () => {
                   className="flex-1 w-full bg-transparent border-none text-white placeholder:text-slate-500 focus:outline-none p-3.5 text-sm h-12" 
                   id="email" 
                   placeholder="user@aquarium.com" 
-                  type="email" 
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required 
                 />
                 <div className="pr-3.5 flex items-center justify-center text-slate-500 group-focus-within:text-primary transition-colors">
                   <Mail className="w-5 h-5" />
@@ -64,7 +99,10 @@ const LoginPage = () => {
                   className="flex-1 w-full bg-transparent border-none text-white placeholder:text-slate-500 focus:outline-none p-3.5 text-sm h-12" 
                   id="password" 
                   placeholder="••••••••" 
-                  type={showPassword ? "text" : "password"} 
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required 
                 />
                 <button 
                   type="button"
@@ -80,8 +118,11 @@ const LoginPage = () => {
             </div>
 
             {/* Submit Button */}
-            <button className="mt-2 w-full flex items-center justify-center rounded-lg bg-primary hover:bg-blue-600 text-white font-bold text-sm h-12 transition-all duration-200 shadow-lg shadow-blue-900/20 active:scale-[0.98]">
-              Sign In
+            <button 
+              disabled={loading}
+              className="mt-2 w-full flex items-center justify-center rounded-lg bg-primary hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm h-12 transition-all duration-200 shadow-lg shadow-blue-900/20 active:scale-[0.98]"
+            >
+              {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 

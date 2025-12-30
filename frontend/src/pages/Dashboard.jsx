@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Thermometer, 
   TrendingUp, 
@@ -6,7 +6,8 @@ import {
   Droplets, 
   Wind, 
   Clock, 
-  Utensils 
+  Utensils,
+  AlertCircle 
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -17,22 +18,173 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
-
-const data = [
-  { time: '00:00', temp: 25.5 },
-  { time: '04:00', temp: 25.2 },
-  { time: '08:00', temp: 25.8 },
-  { time: '12:00', temp: 26.5 },
-  { time: '16:00', temp: 26.1 },
-  { time: '20:00', temp: 25.9 },
-  { time: '24:00', temp: 25.6 },
-];
-
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { api } from '../services/api';
 
 const Dashboard = () => {
-  const [pumpActive, setPumpActive] = useState(true);
   const { user } = useAuth();
+  const toast = useToast();
+  
+  // State
+  const [systemStatus, setSystemStatus] = useState({ online: false, last_seen: null });
+  const [sensors, setSensors] = useState({
+    temperature: 0,
+    brightness: 0, // Changed from lux
+    water_level: 0,
+    pump_status: 'OFF',
+    feeding: {
+      next_feeding: null,
+      interval: '4h',
+      quantity: 1
+    },
+    last_updated: null
+  });
+  const [chartData, setChartData] = useState([]);
+  const [pumpActive, setPumpActive] = useState(false);
+  
+  // Controls State
+  const [brightness, setBrightness] = useState(80);
+  const [isDragging, setIsDragging] = useState(false); // Track slider interaction
+  const lastUpdateRef = React.useRef(0); // Timestamp of last user update
+
+  // Sync brightness from sensors when not dragging AND not recently updated by user
+  useEffect(() => {
+    const timeSinceUpdate = Date.now() - lastUpdateRef.current;
+    // Block server sync if user updated < 3 seconds ago to prevent "bounce"
+    if (!isDragging && sensors.brightness !== undefined && timeSinceUpdate > 3000) {
+      setBrightness(sensors.brightness);
+    }
+  }, [sensors.brightness, isDragging]);
+
+  // Debounced API Call for Brightness
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Only call API if value changed significantly from what the database previously reported
+      if (sensors.brightness !== undefined && brightness !== sensors.brightness) {
+        if (user.role === 'admin') {
+           // Optimistically update sensors to prevent "jump back" from polling
+           setSensors(prev => ({ ...prev, brightness: brightness }));
+           
+           // Mark update time to block sync
+           lastUpdateRef.current = Date.now();
+
+           api.setBrightness(brightness, user.role).catch(err => {
+             console.error(err);
+             toast.error('Failed to update brightness');
+             // Revert on error (next poll will fix it anyway, but good form)
+           });
+        }
+      }
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timer);
+  }, [brightness]); // Dependencies: brightness (captured sensors/user is fine)
+
+  // Fetch Data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // 1. System Status
+        const status = await api.getSystemStatus();
+        setSystemStatus({ 
+          online: status.esp32_online, 
+          last_seen: status.last_seen 
+        });
+
+        // 2. Latest Sensors
+        const latest = await api.getLatestSensors();
+        setSensors(latest);
+        setPumpActive(latest.pump_status === 'ON');
+
+        // 3. History
+        const history = await api.getSensorHistory();
+        // Transform for chart
+        const formattedHistory = history.data.map(item => ({
+          time: new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          temp: item.temperature
+        }));
+        setChartData(formattedHistory);
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error);
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 5000); // Poll every 5s
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Handlers
+  const handlePumpToggle = async () => {
+    // Frontend Check
+    if (user.role !== 'admin') return;
+    
+    try {
+      const newState = !pumpActive;
+      setPumpActive(newState); // Optimistic update
+      // Backend Call (with Role)
+      await api.togglePump(newState, user.role);
+      toast.success(`Pump turned ${newState ? 'ON' : 'OFF'} successfully`);
+    } catch (error) {
+      console.error('Failed to toggle pump:', error);
+      setPumpActive(!pumpActive); // Revert on error
+      if (error.message === 'Unauthorized') {
+        toast.error('Access Denied: You must be an admin.');
+      } else {
+        toast.error('Failed to toggle pump');
+      }
+    }
+  };
+
+  const handleFeed = async () => {
+    // Frontend Check
+    if (user.role !== 'admin') return;
+
+    try {
+      // Backend Call (with Role)
+      await api.triggerFeed(user.role);
+      toast.success('Feeding command sent successfully! 🐟');
+    } catch (error) {
+      console.error('Failed to feed:', error);
+      if (error.message === 'Unauthorized') {
+        toast.error('Access Denied: You must be an admin.');
+      } else {
+        toast.error('Failed to send feeding command');
+      }
+    }
+  };
+
+  const handleFeedingSettingsChange = async (key, value) => {
+    if (user.role !== 'admin') return;
+
+    try {
+      // Optimistic Update
+      setSensors(prev => ({
+        ...prev,
+        feeding: {
+          ...prev.feeding,
+          [key]: value
+        }
+      }));
+
+      // API Call
+      await api.updateFeedingSettings({ [key]: value }, user.role);
+      toast.success(`Feeding ${key} updated to ${value}`);
+    } catch (error) {
+      console.error('Failed to update feeding settings:', error);
+      toast.error('Failed to update settings');
+    }
+  };
+
+  const getTimeUntilFeeding = (nextFeeding) => {
+     if (!nextFeeding) return 'Unknown';
+     const diff = new Date(nextFeeding) - new Date();
+     if (diff < 0) return 'Overdue';
+     const hours = Math.floor(diff / (1000 * 60 * 60));
+     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+     return `In ${hours}h ${minutes}m`;
+  };
 
   return (
     <>
@@ -42,12 +194,12 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Dashboard</h1>
           <p className="text-text-secondary text-sm">Real-time monitoring for <span className="text-white font-medium">Main Tank 01</span></p>
         </div>
-        <div className="flex items-center gap-2 text-xs font-medium text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+        <div className={`flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full border ${systemStatus.online ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : 'text-rose-400 bg-rose-500/10 border-rose-500/20'}`}>
           <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${systemStatus.online ? 'bg-emerald-400' : 'bg-rose-400'}`}></span>
+            <span className={`relative inline-flex rounded-full h-2 w-2 ${systemStatus.online ? 'bg-emerald-500' : 'bg-rose-500'}`}></span>
           </span>
-          System Operational
+          {systemStatus.online ? 'System Operational' : 'System Offline'}
         </div>
       </div>
 
@@ -64,12 +216,12 @@ const Dashboard = () => {
               <h3 className="text-text-secondary font-medium">Water Temperature</h3>
             </div>
             <div className="mt-4 flex items-baseline gap-2">
-              <span className="text-6xl font-black text-white tracking-tighter">26.5</span>
+              <span className="text-6xl font-black text-white tracking-tighter">{sensors.temperature}</span>
               <span className="text-2xl font-medium text-text-secondary">°C</span>
             </div>
             <div className="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
               <TrendingUp className="w-4 h-4" />
-              <span>+0.2% from last hour</span>
+              <span>Stable</span>
             </div>
           </div>
           <div className="relative z-10 mt-8">
@@ -80,7 +232,7 @@ const Dashboard = () => {
             <div className="w-full bg-card-border rounded-full h-1.5">
               <div className="bg-gradient-to-r from-blue-500 to-emerald-400 h-1.5 rounded-full" style={{ width: '65%' }}></div>
             </div>
-            <p className="text-xs text-text-secondary mt-2 text-right">Optimal Status</p>
+            <p className="text-xs text-text-secondary mt-2 text-right">Last updated: {sensors.last_updated ? new Date(sensors.last_updated).toLocaleTimeString() : 'Never'}</p>
           </div>
         </div>
 
@@ -99,7 +251,7 @@ const Dashboard = () => {
           </div>
           <div className="flex-1 min-h-[200px] w-full relative">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
+              <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#1152d4" stopOpacity={0.3}/>
@@ -131,8 +283,44 @@ const Dashboard = () => {
             <span className="bg-card-border px-2 py-0.5 rounded text-[10px] text-text-secondary font-medium uppercase">Daylight</span>
           </div>
           <div>
-            <h4 className="text-text-secondary text-sm font-medium mb-1">Lighting Intensity</h4>
-            <p className="text-2xl font-bold text-white">850 <span className="text-base font-normal text-text-secondary">Lux</span></p>
+            <h4 className="text-text-secondary text-sm font-medium mb-2">Lighting Intensity</h4>
+            <div className="flex items-end justify-between mb-2">
+              <span className="text-2xl font-bold text-white">{brightness}%</span>
+              <span className="text-xs text-text-secondary mb-1">Target</span>
+            </div>
+            {user.role === 'admin' ? (
+              <input 
+                type="range" 
+                min="0" 
+                max="100" 
+                value={brightness} 
+                onChange={(e) => {
+                  setBrightness(parseInt(e.target.value));
+                  lastUpdateRef.current = Date.now(); // Block sync immediately
+                }}
+                onMouseDown={() => {
+                  setIsDragging(true);
+                  lastUpdateRef.current = Date.now();
+                }}
+                onMouseUp={() => {
+                  setIsDragging(false);
+                  lastUpdateRef.current = Date.now();
+                }}
+                onTouchStart={() => {
+                  setIsDragging(true);
+                  lastUpdateRef.current = Date.now();
+                }}
+                onTouchEnd={() => {
+                  setIsDragging(false);
+                  lastUpdateRef.current = Date.now();
+                }}
+                className="w-full h-2 bg-card-border rounded-lg appearance-none cursor-pointer accent-yellow-500"
+              />
+            ) : (
+             <div className="w-full bg-card-border rounded-full h-2">
+                <div className="bg-yellow-500 h-2 rounded-full" style={{ width: `${brightness}%` }}></div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -147,10 +335,13 @@ const Dashboard = () => {
           <div>
             <div className="flex justify-between items-end mb-2">
               <h4 className="text-text-secondary text-sm font-medium">Water Level</h4>
-              <p className="text-xl font-bold text-white">92%</p>
+              <p className="text-xl font-bold text-white">{sensors.water_level}%</p>
             </div>
             <div className="w-full bg-card-border rounded-full h-2">
-              <div className="bg-blue-500 h-2 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" style={{ width: '92%' }}></div>
+              <div 
+                className={`h-2 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-500 ${sensors.water_level < 30 ? 'bg-rose-500' : 'bg-blue-500'}`} 
+                style={{ width: `${sensors.water_level}%` }}
+              ></div>
             </div>
           </div>
         </div>
@@ -166,7 +357,7 @@ const Dashboard = () => {
               <button 
                 role="switch" 
                 aria-checked={pumpActive}
-                onClick={() => setPumpActive(!pumpActive)}
+                onClick={handlePumpToggle}
                 className={`w-11 h-6 rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-dark ${pumpActive ? 'bg-primary' : 'bg-slate-700'}`}
               >
                 <span className={`absolute top-1 bg-white w-4 h-4 rounded-full transition-transform ${pumpActive ? 'right-1' : 'left-1'}`}></span>
@@ -179,6 +370,9 @@ const Dashboard = () => {
               {pumpActive ? 'Active' : 'Inactive'}
               {pumpActive && <span className="block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>}
             </div>
+            <p className="text-xs text-text-secondary mt-1">
+              Last Session: <span className="text-slate-300">2 hours ago</span>
+            </p>
           </div>
         </div>
 
@@ -190,13 +384,57 @@ const Dashboard = () => {
             </div>
             <span className="bg-card-border px-2 py-0.5 rounded text-[10px] text-text-secondary font-medium uppercase">Auto</span>
           </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
             <div>
               <h4 className="text-text-secondary text-sm font-medium mb-0.5">Next Feeding</h4>
-              <p className="text-white font-bold">In 2 hours</p>
+              <p className="text-white font-bold">{getTimeUntilFeeding(sensors.feeding?.next_feeding)}</p>
             </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="text-[10px] text-text-secondary uppercase font-bold tracking-wider">Interval</label>
+                {user.role === 'admin' ? (
+                  <select 
+                    value={sensors.feeding?.interval || '4h'}
+                    onChange={(e) => handleFeedingSettingsChange('interval', e.target.value)}
+                    className="w-full bg-slate-900 border border-card-border rounded px-2 py-1 text-xs text-white focus:border-primary outline-none"
+                  >
+                    <option value="4h">Every 4h</option>
+                    <option value="8h">Every 8h</option>
+                    <option value="12h">Every 12h</option>
+                    <option value="24h">Daily</option>
+                  </select>
+                ) : (
+                  <div className="text-xs text-white bg-slate-800/50 px-2 py-1 rounded border border-card-border">
+                    Every {(sensors.feeding?.interval || '4h').replace('h', ' Hours')}
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="text-[10px] text-text-secondary uppercase font-bold tracking-wider">Scoops</label>
+                {user.role === 'admin' ? (
+                  <select 
+                    value={sensors.feeding?.quantity || 1}
+                    onChange={(e) => handleFeedingSettingsChange('quantity', parseInt(e.target.value))}
+                    className="w-full bg-slate-900 border border-card-border rounded px-2 py-1 text-xs text-white focus:border-primary outline-none"
+                  >
+                    <option value="1">1 Scoop</option>
+                    <option value="2">2 Scoops</option>
+                    <option value="3">3 Scoops</option>
+                  </select>
+                ) : (
+                  <div className="text-xs text-white bg-slate-800/50 px-2 py-1 rounded border border-card-border">
+                    {sensors.feeding?.quantity} Scoop{sensors.feeding?.quantity > 1 ? 's' : ''}
+                  </div>
+                )}
+              </div>
+            </div>
+
             {user.role === 'admin' && (
-              <button className="mt-1 w-full py-1.5 px-3 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-xs font-bold rounded transition-colors flex items-center justify-center gap-1 shadow-lg shadow-blue-900/20">
+              <button 
+                onClick={handleFeed}
+                className="w-full py-1.5 px-3 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-xs font-bold rounded transition-colors flex items-center justify-center gap-1 shadow-lg shadow-blue-900/20"
+              >
                 <Utensils className="w-3 h-3" />
                 Feed Now
               </button>
