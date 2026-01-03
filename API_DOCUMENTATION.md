@@ -4,11 +4,12 @@
 This API allows communication between the Smart Aquarium Frontend, the Backend Server, and the IoT Device (ESP32). It provides endpoints for monitoring sensor data, controlling device state (pump, lights, feeder), and managing system status.
 
 ## Base URL
-\`http://localhost:3000/api\`
+- **Local**: `http://localhost:3000/api`
+- **Production**: `https://smart-aquarium-web.vercel.app/api`
 
 ## Authentication
 Protected endpoints require a valid Supabase JWT Token.
-- **Header**: \`Authorization: Bearer <TOKEN>\`
+- **Header**: `Authorization: Bearer <TOKEN>`
 
 ---
 
@@ -16,10 +17,10 @@ Protected endpoints require a valid Supabase JWT Token.
 
 ### Get Latest Readings
 Returns the most recent sensor values and current device state.
-- **Endpoint**: \`GET /latest\`
+- **Endpoint**: `GET /latest`
 - **Access**: Public
 - **Response**:
-  \`\`\`json
+  ```json
   {
     "temperature": 26.5,
     "brightness": 80,
@@ -33,14 +34,14 @@ Returns the most recent sensor values and current device state.
     },
     "last_updated": "2024-03-20T10:30:00Z"
   }
-  \`\`\`
+  ```
 
 ### Get Sensor History
 Returns historical sensor data for charting.
-- **Endpoint**: \`GET /history\`
+- **Endpoint**: `GET /history`
 - **Access**: Public
 - **Response**:
-  \`\`\`json
+  ```json
   {
     "data": [
       {
@@ -51,20 +52,20 @@ Returns historical sensor data for charting.
       ...
     ]
   }
-  \`\`\`
+  ```
 
 ### Upload Sensor Data (IoT Device)
 Used by the ESP32 to push new readings.
-- **Endpoint**: \`POST /upload\`
+- **Endpoint**: `POST /upload`
 - **Access**: Public (Internal Network)
 - **Body**:
-  \`\`\`json
+  ```json
   {
     "temperature": 26.5,
     "water_level": 90
   }
-  \`\`\`
-- **Response**: \`{ "success": true }\`
+  ```
+- **Response**: `{ "success": true }`
 
 ---
 
@@ -74,61 +75,73 @@ All Control endpoints require **Admin Authentication**.
 
 ### Toggle Air Pump
 Turn the air pump ON or OFF.
-- **Endpoint**: \`POST /pump\`
-- **Header**: \`Authorization: Bearer <TOKEN>\`
+- **Endpoint**: `POST /pump`
+- **Header**: `Authorization: Bearer <TOKEN>`
 - **Body**:
-  \`\`\`json
+  ```json
   { "state": true }  // true = ON, false = OFF
-  \`\`\`
+  ```
 - **Response**:
-  \`\`\`json
+  ```json
   {
     "status": "queued",
     "command": { "type": "PUMP", "value": true }
   }
-  \`\`\`
+  ```
 
 ### Trigger Feeding
 Trigger an immediate feeding cycle.
-- **Endpoint**: \`POST /feed\`
-- **Header**: \`Authorization: Bearer <TOKEN>\`
-- **Body**: \`{ "action": "FEED" }\`
-- **Response**: \`{ "status": "queued" }\`
+- **Endpoint**: `POST /feed`
+- **Header**: `Authorization: Bearer <TOKEN>`
+- **Body**: `{ "action": "FEED" }`
+- **Response**:
+  ```json
+  {
+    "status": "queued",
+    "next_feeding_at": "2024-03-20T15:00:00Z" 
+  }
+  ```
 
 ### Set Brightness
 Adjust the LED light brightness (0-100).
-- **Endpoint**: \`POST /brightness\`
-- **Header**: \`Authorization: Bearer <TOKEN>\`
+- **Endpoint**: `POST /brightness`
+- **Header**: `Authorization: Bearer <TOKEN>`
 - **Body**:
-  \`\`\`json
+  ```json
   { "value": 75 }
-  \`\`\`
+  ```
 - **Response**:
-  \`\`\`json
+  ```json
   {
     "status": "queued",
     "command": { "type": "LIGHT", "value": 75 }
   }
-  \`\`\`
+  ```
 
 ### Update Feeding Settings
 Configure automatic feeding schedule.
-- **Endpoint**: \`POST /feeding-settings\`
-- **Header**: \`Authorization: Bearer <TOKEN>\`
+- **Endpoint**: `POST /feeding-settings`
+- **Header**: `Authorization: Bearer <TOKEN>`
 - **Body**:
-  \`\`\`json
+  ```json
   {
     "interval": "12 Hours",
     "quantity": 2
   }
-  \`\`\`
-- **Response**: \`{ "success": true, "command": { ... } }\`
+  ```
+- **Response**: 
+  ```json
+  { 
+    "success": true, 
+    "next_feeding_at": "2024-03-20T15:00:00Z" 
+  }
+  ```
 
 ### Get Latest Command (IoT Device)
-Used by ESP32 to poll for pending commands (Long Polling).
-- **Endpoint**: \`GET /latest\`
+Used by ESP32 to poll for pending commands. Fetches from the persistent `command_queue` table.
+- **Endpoint**: `GET /latest`
 - **Response**:
-  \`\`\`json
+  ```json
   {
     "has_command": true,
     "command": {
@@ -136,7 +149,7 @@ Used by ESP32 to poll for pending commands (Long Polling).
       "value": "ON"
     }
   }
-  \`\`\`
+  ```
 
 ---
 
@@ -144,25 +157,25 @@ Used by ESP32 to poll for pending commands (Long Polling).
 
 ### Get System Status
 Check if the backend and database are reachable.
-- **Endpoint**: \`GET /status\`
+- **Endpoint**: `GET /status`
 - **Access**: Public
 - **Response**:
-  \`\`\`json
+  ```json
   {
     "esp32_online": true,
     "last_seen": "2024-03-20T10:30:00Z"
   }
-  \`\`\`
+  ```
 
 ---
 
 ## 4. Authentication (`/api/auth`)
 
 ### Check User Role
-Securely verify if a user has Admin privileges.
-- **Endpoint**: \`GET /role/:userId\`
-- **Access**: Public (Service Role check internal)
+Verify if a user has Admin privileges by checking the `admin_users` whitelist.
+- **Endpoint**: `GET /role/:userId`
+- **Access**: Public
 - **Response**:
-  \`\`\`json
+  ```json
   { "role": "admin" } // or "viewer"
-  \`\`\`
+  ```
