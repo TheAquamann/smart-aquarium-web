@@ -32,7 +32,8 @@ Returns the most recent sensor values and current device state.
       "quantity": 2,
       "last_fed": "2024-03-19T14:00:00Z"
     },
-    "last_updated": "2024-03-20T10:30:00Z"
+    "last_updated": "2024-03-20T10:30:00Z",
+    "last_pump_toggle": "2024-03-20T08:15:00Z"
   }
   ```
 
@@ -40,6 +41,8 @@ Returns the most recent sensor values and current device state.
 Returns historical sensor data for charting.
 - **Endpoint**: `GET /history`
 - **Access**: Public
+- **Query Parameters**:
+  - `range` (optional): `24h` (default), `7d`, `30d`
 - **Response**:
   ```json
   {
@@ -58,6 +61,8 @@ Returns historical sensor data for charting.
 Used by the ESP32 to push new readings.
 - **Endpoint**: `POST /upload`
 - **Access**: Public (Internal Network)
+- **Behavior**: 
+  - Automatically triggers **Air Pump ON** if `temperature > 28.0°C` and pump is currently OFF.
 - **Body**:
   ```json
   {
@@ -101,6 +106,7 @@ Trigger an immediate feeding cycle.
     "next_feeding_at": "2024-03-20T15:00:00Z" 
   }
   ```
+  *Note: Triggering a manual feed resets the schedule based on the query time (Time + Interval).*
 
 ### Set Brightness
 Adjust the LED light brightness (0-100).
@@ -140,6 +146,9 @@ Configure automatic feeding schedule.
 ### Get Latest Command (IoT Device)
 Used by ESP32 to poll for pending commands. Fetches from the persistent `command_queue` table.
 - **Endpoint**: `GET /latest`
+- **Behavior**: 
+  - **Expiration**: Commands older than **10 minutes** are automatically marked as processed and ignored.
+  - **Superseding**: New commands cancel previous unprocessed commands of the same type.
 - **Response**:
   ```json
   {

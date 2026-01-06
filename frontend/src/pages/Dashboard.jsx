@@ -36,12 +36,15 @@ const Dashboard = () => {
     feeding: {
       next_feeding: null,
       interval: '4h',
-      quantity: 1
+      quantity: 1,
+      last_fed: null
     },
-    last_updated: null
+    last_updated: null,
+    last_pump_toggle: null
   });
   const [chartData, setChartData] = useState([]);
   const [pumpActive, setPumpActive] = useState(false);
+  const [timeRange, setTimeRange] = useState('24h'); // Add state for selector
   
   // Controls State
   const [brightness, setBrightness] = useState(80);
@@ -82,38 +85,47 @@ const Dashboard = () => {
   }, [brightness]); // Dependencies: brightness (captured sensors/user is fine)
 
   // Fetch Data
+  const fetchData = async () => {
+    try {
+      // 1. System Status
+      const status = await api.getSystemStatus();
+      setSystemStatus({ 
+        online: status.esp32_online, 
+        last_seen: status.last_seen 
+      });
+
+      // 2. Latest Sensors
+      const latest = await api.getLatestSensors();
+      setSensors(latest);
+      setPumpActive(latest.pump_status === 'ON');
+
+      // 3. History (pass timeRange)
+      const history = await api.getSensorHistory(timeRange);
+      // Transform for chart
+      const formattedHistory = history.data.map(item => ({
+        time: new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
+        temp: item.temperature
+      }));
+      setChartData(formattedHistory);
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // 1. System Status
-        const status = await api.getSystemStatus();
-        setSystemStatus({ 
-          online: status.esp32_online, 
-          last_seen: status.last_seen 
-        });
-
-        // 2. Latest Sensors
-        const latest = await api.getLatestSensors();
-        setSensors(latest);
-        setPumpActive(latest.pump_status === 'ON');
-
-        // 3. History
-        const history = await api.getSensorHistory();
-        // Transform for chart
-        const formattedHistory = history.data.map(item => ({
-          time: new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          temp: item.temperature
-        }));
-        setChartData(formattedHistory);
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
-      }
-    };
-
-    fetchData();
-    const interval = setInterval(fetchData, 5000); // Poll every 5s
+    fetchData(); // Initial fetch when component mounts or range changes
+    
+    // Polling only needs to refresh sensors/status frequently. 
+    // Ideally history doesn't change fast, but we'll include it for simplicity.
+    const interval = setInterval(fetchData, 5000); 
     return () => clearInterval(interval);
-  }, []);
+  }, [timeRange]); // Re-run when timeRange changes
+  
+  // Handlers
+  const handleRangeChange = (e) => {
+    setTimeRange(e.target.value);
+    // fetchData will be triggered by useEffect dependency
+  };
   
   // Handlers
   const handlePumpToggle = async () => {
@@ -243,10 +255,14 @@ const Dashboard = () => {
               <h3 className="text-white font-bold text-lg">Temperature Stability</h3>
               <p className="text-text-secondary text-xs">Last 24 Hours</p>
             </div>
-            <select className="bg-background-dark border border-card-border text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-primary">
-              <option>24 Hours</option>
-              <option>7 Days</option>
-              <option>30 Days</option>
+            <select 
+              value={timeRange}
+              onChange={handleRangeChange}
+              className="bg-background-dark border border-card-border text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-primary"
+            >
+              <option value="24h">24 Hours</option>
+              <option value="7d">7 Days</option>
+              <option value="30d">30 Days</option>
             </select>
           </div>
           <div className="flex-1 min-h-[200px] w-full relative">
@@ -371,7 +387,11 @@ const Dashboard = () => {
               {pumpActive && <span className="block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>}
             </div>
             <p className="text-xs text-text-secondary mt-1">
-              Last Session: <span className="text-slate-300">2 hours ago</span>
+              Last Action: <span className="text-slate-300">
+                {sensors.last_pump_toggle 
+                  ? new Date(sensors.last_pump_toggle).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
+                  : 'Never'}
+              </span>
             </p>
           </div>
         </div>
@@ -388,6 +408,13 @@ const Dashboard = () => {
             <div>
               <h4 className="text-text-secondary text-sm font-medium mb-0.5">Next Feeding</h4>
               <p className="text-white font-bold">{getTimeUntilFeeding(sensors.feeding?.next_feeding)}</p>
+              <p className="text-[10px] text-text-secondary mt-0.5">
+                Last fed: <span className="text-slate-400">
+                  {sensors.feeding?.last_fed 
+                    ? new Date(sensors.feeding.last_fed).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
+                    : 'Unknown'}
+                </span>
+              </p>
             </div>
             
             <div className="grid grid-cols-2 gap-2">

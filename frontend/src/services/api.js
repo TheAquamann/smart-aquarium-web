@@ -26,10 +26,10 @@ export const api = {
     return res.json();
   },
 
-  getSensorHistory: async (from, to) => {
-    const query = new URLSearchParams({ from, to }).toString();
-    const res = await fetch(`${API_URL}/sensors/history?${query}`);
-    return res.json();
+  getSensorHistory: async (range = '24h') => {
+    const response = await fetch(`${API_URL}/sensors/history?range=${range}`);
+    if (!response.ok) throw new Error('Failed to fetch history');
+    return response.json();
   },
 
   // Control
@@ -82,6 +82,7 @@ export const api = {
   },
 
   // Auth
+
   getUserRole: async (userId) => {
     const res = await fetch(`${API_URL}/auth/role/${userId}`);
     if (!res.ok) throw new Error('Failed to fetch role');
