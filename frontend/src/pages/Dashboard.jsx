@@ -193,9 +193,9 @@ const Dashboard = () => {
      if (!nextFeeding) return 'Unknown';
      const diff = new Date(nextFeeding) - new Date();
      if (diff < 0) return 'Overdue';
-     const hours = Math.floor(diff / (1000 * 60 * 60));
-     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-     return `In ${hours}h ${minutes}m`;
+     const minutes = Math.floor(diff / (1000 * 60));
+     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+     return `In ${minutes}m ${seconds}s`;
   };
 
   return (
@@ -426,14 +426,20 @@ const Dashboard = () => {
                     onChange={(e) => handleFeedingSettingsChange('interval', e.target.value)}
                     className="w-full bg-slate-900 border border-card-border rounded px-2 py-1 text-xs text-white focus:border-primary outline-none"
                   >
-                    <option value="4h">Every 4h</option>
-                    <option value="8h">Every 8h</option>
-                    <option value="12h">Every 12h</option>
-                    <option value="24h">Daily</option>
+                    <option value="30s">Every 30s</option>
+                    <option value="1m">Every 1m</option>
+                    <option value="2m">Every 2m</option>
+                    <option value="3m">Every 3m</option>
+                    <option value="5m">Every 5m</option>
+                    <option value="10m">Every 10m</option>
+                    <option value="30m">Every 30m</option>
                   </select>
                 ) : (
                   <div className="text-xs text-white bg-slate-800/50 px-2 py-1 rounded border border-card-border">
-                    Every {(sensors.feeding?.interval || '4h').replace('h', ' Hours')}
+                    Every {(sensors.feeding?.interval || '4h')
+                      .replace('h', ' Hours')
+                      .replace('m', ' Minutes')
+                      .replace('s', ' Seconds')}
                   </div>
                 )}
               </div>
