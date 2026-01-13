@@ -24,7 +24,6 @@ Returns the most recent sensor values and current device state.
   {
     "temperature": 26.5,
     "brightness": 80,
-    "water_level": 85,
     "pump_status": "ON",
     "feeding": {
       "next_feeding": "2024-03-20T14:00:00Z",
@@ -49,8 +48,7 @@ Returns historical sensor data for charting.
     "data": [
       {
         "created_at": "2024-03-20T10:00:00Z",
-        "temperature": 26.5,
-        "water_level": 85
+        "temperature": 26.5
       },
       ...
     ]
@@ -66,8 +64,7 @@ Used by the ESP32 to push new readings.
 - **Body**:
   ```json
   {
-    "temperature": 26.5,
-    "water_level": 90
+    "temperature": 26.5
   }
   ```
 - **Response**: `{ "success": true }`

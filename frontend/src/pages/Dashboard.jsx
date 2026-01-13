@@ -31,7 +31,6 @@ const Dashboard = () => {
   const [sensors, setSensors] = useState({
     temperature: 0,
     brightness: 0, // Changed from lux
-    water_level: 0,
     pump_status: 'OFF',
     feeding: {
       next_feeding: null,
@@ -340,27 +339,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Water Level Card */}
-        <div className="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
-          <div className="flex justify-between items-start">
-            <div className="bg-blue-500/10 p-2.5 rounded-lg text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
-              <Droplets className="w-6 h-6" />
-            </div>
-            <span className="bg-card-border px-2 py-0.5 rounded text-[10px] text-text-secondary font-medium uppercase">Normal</span>
-          </div>
-          <div>
-            <div className="flex justify-between items-end mb-2">
-              <h4 className="text-text-secondary text-sm font-medium">Water Level</h4>
-              <p className="text-xl font-bold text-white">{sensors.water_level}%</p>
-            </div>
-            <div className="w-full bg-card-border rounded-full h-2">
-              <div 
-                className={`h-2 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-all duration-500 ${sensors.water_level < 30 ? 'bg-rose-500' : 'bg-blue-500'}`} 
-                style={{ width: `${sensors.water_level}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
+
 
         {/* Air Pump Card */}
         <div className="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
