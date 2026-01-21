@@ -119,6 +119,13 @@ const Dashboard = () => {
     const interval = setInterval(fetchData, 5000); 
     return () => clearInterval(interval);
   }, [timeRange]); // Re-run when timeRange changes
+
+  // Smooth Timer Ticker
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
   
   // Handlers
   const handleRangeChange = (e) => {
@@ -181,7 +188,7 @@ const Dashboard = () => {
 
       // API Call
       await api.updateFeedingSettings({ [key]: value }, user.role);
-      toast.success(`Feeding ${key} updated to ${value}`);
+      toast.success(`${key} updated. Changes will apply after the next feed.`);
     } catch (error) {
       console.error('Failed to update feeding settings:', error);
       toast.error('Failed to update settings');
@@ -190,10 +197,24 @@ const Dashboard = () => {
 
   const getTimeUntilFeeding = (nextFeeding) => {
      if (!nextFeeding) return 'Unknown';
-     const diff = new Date(nextFeeding) - new Date();
-     if (diff < 0) return 'Overdue';
+     const diff = new Date(nextFeeding) - now;
+     
+     // Grace period of 1 minute before showing "Overdue"
+     if (diff < 0) {
+        if (diff > -60000) return 'Feeding...';
+        return 'Overdue (Check Device)';
+     }
+
      const minutes = Math.floor(diff / (1000 * 60));
      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+     
+     // Format nicely
+     if (minutes > 60) {
+         const hours = Math.floor(minutes / 60);
+         const mins = minutes % 60;
+         return `In ${hours}h ${mins}m`;
+     }
+     
      return `In ${minutes}m ${seconds}s`;
   };
 
@@ -386,7 +407,13 @@ const Dashboard = () => {
           <div className="flex flex-col gap-3">
             <div>
               <h4 className="text-text-secondary text-sm font-medium mb-0.5">Next Feeding</h4>
-              <p className="text-white font-bold">{getTimeUntilFeeding(sensors.feeding?.next_feeding)}</p>
+              <p className={`font-bold ${
+                  getTimeUntilFeeding(sensors.feeding?.next_feeding).includes('Overdue') ? 'text-rose-500 animate-pulse' :
+                  getTimeUntilFeeding(sensors.feeding?.next_feeding) === 'Feeding...' ? 'text-yellow-500 animate-pulse' :
+                  'text-white'
+              }`}>
+                  {getTimeUntilFeeding(sensors.feeding?.next_feeding)}
+              </p>
               <p className="text-[10px] text-text-secondary mt-0.5">
                 Last fed: <span className="text-slate-400">
                   {sensors.feeding?.last_fed 
@@ -436,7 +463,7 @@ const Dashboard = () => {
                   </select>
                 ) : (
                   <div className="text-xs text-white bg-slate-800/50 px-2 py-1 rounded border border-card-border">
-                    {sensors.feeding?.quantity} Scoop{sensors.feeding?.quantity > 1 ? 's' : ''}
+                    <span className="font-bold text-primary">{sensors.feeding?.quantity}</span> Scoop{sensors.feeding?.quantity > 1 ? 's' : ''}
                   </div>
                 )}
               </div>

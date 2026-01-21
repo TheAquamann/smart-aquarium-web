@@ -140,6 +140,19 @@ Configure automatic feeding schedule.
   }
   ```
 
+### Confirm Automatic Feed (IoT Device)
+Triggered by the device after a successful automatic feed to update the schedule.
+- **Endpoint**: `POST /confirm-feed`
+- **Access**: Public (Internal Network)
+- **Body**: `{}` (Empty JSON)
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "next_feeding_at": "2024-03-20T19:00:00Z"
+  }
+  ```
+
 ### Get Latest Command (IoT Device)
 Used by ESP32 to poll for pending commands. Fetches from the persistent `command_queue` table.
 - **Endpoint**: `GET /latest`
