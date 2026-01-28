@@ -136,9 +136,10 @@ Configure automatic feeding schedule.
   ```json
   { 
     "success": true, 
-    "next_feeding_at": "2024-03-20T15:00:00Z" 
+    "message": "Settings updated for future cycles"
   }
   ```
+  *Note: Changing settings does NOT reset the current countdown. The new interval will apply after the next automatic or manual feed.*
 
 ### Confirm Automatic Feed (IoT Device)
 Triggered by the device after a successful automatic feed to update the schedule.
