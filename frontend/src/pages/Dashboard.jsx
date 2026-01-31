@@ -85,6 +85,11 @@ const Dashboard = () => {
 
   // Fetch Data
   const fetchData = async () => {
+    // Block updates if user recently interacted (2s buffer) to prevent optimistic UI flicker
+    if (Date.now() - lastUpdateRef.current < 2000) {
+      return; 
+    }
+
     try {
       // 1. System Status
       const status = await api.getSystemStatus();
@@ -138,6 +143,9 @@ const Dashboard = () => {
     // Frontend Check
     if (user.role !== 'admin') return;
     
+    // Block polling updates immediately
+    lastUpdateRef.current = Date.now();
+
     try {
       const newState = !pumpActive;
       setPumpActive(newState); // Optimistic update
@@ -175,6 +183,9 @@ const Dashboard = () => {
 
   const handleFeedingSettingsChange = async (key, value) => {
     if (user.role !== 'admin') return;
+
+    // Block polling updates immediately
+    lastUpdateRef.current = Date.now();
 
     try {
       // Optimistic Update
