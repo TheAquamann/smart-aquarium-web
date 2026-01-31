@@ -60,11 +60,13 @@ Used by the ESP32 to push new readings.
 - **Endpoint**: `POST /upload`
 - **Access**: Public (Internal Network)
 - **Behavior**: 
-  - Automatically triggers **Air Pump ON** if `temperature > 28.0°C` and pump is currently OFF.
+  - Records sensor data.
+  - Updates `device_state` if `pump_active` is provided (syncs state without queuing commands).
 - **Body**:
   ```json
   {
-    "temperature": 26.5
+    "temperature": 26.5,
+    "pump_active": "ON"
   }
   ```
 - **Response**: `{ "success": true }`
