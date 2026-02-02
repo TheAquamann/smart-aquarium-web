@@ -41,10 +41,10 @@ const LoginPage = () => {
       {/* Ambient Background Effects */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         {/* Deep Blue Base */}
-        <div className="absolute inset-0 bg-[#0f172a] dark:bg-[#050b14]"></div>
+        <div className="absolute inset-0 bg-zinc-950"></div>
         {/* Gradient Blobs */}
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px]"></div>
-        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-cyan-900/30 rounded-full blur-[120px]"></div>
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-white/5 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-zinc-800/30 rounded-full blur-[120px]"></div>
         {/* Abstract Image Overlay */}
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-10 mix-blend-overlay" 
@@ -53,50 +53,43 @@ const LoginPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center p-4 w-full max-w-[480px]">
+      <div className="relative z-10 flex flex-col items-center justify-center p-4 w-full max-w-[420px]">
         {/* Brand */}
-        <div className="mb-8 flex flex-col items-center justify-center gap-3 animate-float">
-          <div className="flex items-center justify-center size-14 rounded-full bg-gradient-to-br from-primary to-cyan-600 shadow-lg shadow-primary/30 text-white">
-            <Droplets className="w-8 h-8" />
-          </div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">AquaMonitor</h2>
+        <div className="mb-10 text-center animate-float">
+          <h2 className="text-4xl font-light tracking-[0.4em] text-white uppercase select-none">NERO</h2>
         </div>
 
         {/* Login Card */}
-        <div className="glass-panel w-full rounded-xl shadow-2xl p-8 sm:p-10">
+        <div className="glass-panel w-full rounded-xl shadow-2xl p-8">
           <div className="text-center mb-8">
-            <h1 className="text-white tracking-tight text-2xl font-bold leading-tight mb-2">Welcome Back</h1>
-            <p className="text-slate-400 text-sm font-normal leading-relaxed">Sign in to monitor your smart aquarium ecosystem.</p>
+            <h1 className="text-white tracking-tight text-xl font-medium mb-1">Welcome Back</h1>
           </div>
 
           <form className="flex flex-col gap-5" onSubmit={handleLogin}>
             {/* Email Field */}
             <div className="flex flex-col gap-2">
-              <label className="text-slate-300 text-sm font-medium leading-normal" htmlFor="email">Email Address</label>
-              <div className="group flex w-full items-center rounded-lg border border-slate-700 bg-slate-900/50 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all duration-200">
+              <label className="text-zinc-400 text-xs font-medium uppercase tracking-wider" htmlFor="email">Email</label>
+              <div className="group flex w-full items-center rounded-lg border border-zinc-700 bg-zinc-900/50 focus-within:border-white focus-within:ring-1 focus-within:ring-white transition-all duration-200">
                 <input 
-                  className="flex-1 w-full bg-transparent border-none text-white placeholder:text-slate-500 focus:outline-none p-3.5 text-sm h-12" 
+                  className="flex-1 w-full bg-transparent border-none text-white placeholder:text-zinc-600 focus:outline-none p-3 text-sm h-11" 
                   id="email" 
-                  placeholder="user@aquarium.com" 
+                  placeholder="name@example.com" 
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required 
                 />
-                <div className="pr-3.5 flex items-center justify-center text-slate-500 group-focus-within:text-primary transition-colors">
-                  <Mail className="w-5 h-5" />
-                </div>
               </div>
             </div>
 
             {/* Password Field */}
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
-                <label className="text-slate-300 text-sm font-medium leading-normal" htmlFor="password">Password</label>
+                <label className="text-zinc-400 text-xs font-medium uppercase tracking-wider" htmlFor="password">Password</label>
               </div>
-              <div className="group flex w-full items-center rounded-lg border border-slate-700 bg-slate-900/50 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all duration-200">
+              <div className="group flex w-full items-center rounded-lg border border-zinc-700 bg-zinc-900/50 focus-within:border-white focus-within:ring-1 focus-within:ring-white transition-all duration-200">
                 <input 
-                  className="flex-1 w-full bg-transparent border-none text-white placeholder:text-slate-500 focus:outline-none p-3.5 text-sm h-12" 
+                  className="flex-1 w-full bg-transparent border-none text-white placeholder:text-zinc-600 focus:outline-none p-3 text-sm h-11" 
                   id="password" 
                   placeholder="••••••••" 
                   type={showPassword ? "text" : "password"}
@@ -107,58 +100,27 @@ const LoginPage = () => {
                 <button 
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="pr-3.5 flex items-center justify-center text-slate-500 hover:text-white cursor-pointer transition-colors"
+                  className="pr-3 flex items-center justify-center text-zinc-500 hover:text-white cursor-pointer transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
-              </div>
-              <div className="flex justify-end mt-1">
-                <a className="text-xs font-medium text-primary hover:text-blue-400 transition-colors" href="#">Forgot password?</a>
               </div>
             </div>
 
             {/* Submit Button */}
             <button 
               disabled={loading}
-              className="mt-2 w-full flex items-center justify-center rounded-lg bg-primary hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm h-12 transition-all duration-200 shadow-lg shadow-blue-900/20 active:scale-[0.98]"
+              className="mt-4 w-full flex items-center justify-center rounded-full bg-white hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-xs uppercase tracking-widest h-11 transition-all duration-200 shadow-lg shadow-white/5 active:scale-[0.98]"
             >
               {loading ? 'Signing In...' : 'Sign In'}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="relative my-8">
-            <div aria-hidden="true" className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-700/60"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="px-2 text-xs text-slate-500 uppercase tracking-wider bg-[#101622]/80 backdrop-blur-sm rounded">System Access</span>
-            </div>
-          </div>
-
-           {/* Footer */}
-           <div className="text-center">
-            <p className="text-slate-400 text-sm">
-                Don't have an account? 
-                <a className="font-medium text-primary hover:text-blue-400 transition-colors ml-1" href="#">Contact Admin</a>
-            </p>
-            {/* Role Hint */}
-            <div className="mt-6 flex justify-center gap-4 text-xs text-slate-600">
-                <div className="flex items-center gap-1.5">
-                    <div className="size-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                    <span>System Operational</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5" />
-                    <span>Secure Connection</span>
-                </div>
-            </div>
-          </div>
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 text-slate-500 text-xs text-center z-10">
-          © 2024 AquaMonitor Systems. All rights reserved.
+        <div className="mt-8 text-zinc-600 text-xs text-center z-10">
+          © 2026 NERO Systems. All rights reserved.
         </div>
       </div>
     </div>

@@ -289,7 +289,7 @@ const Dashboard = () => {
             <select 
               value={timeRange}
               onChange={handleRangeChange}
-              className="bg-background-dark border border-card-border text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-primary"
+              className="bg-background-dark border border-card-border text-white text-xs rounded-lg px-3 py-1.5 outline-none focus:border-white"
             >
               <option value="24h">24 Hours</option>
               <option value="7d">7 Days</option>
@@ -301,18 +301,18 @@ const Dashboard = () => {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1152d4" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#1152d4" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#ffffff" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#ffffff" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#232f48" vertical={false} />
-                <XAxis dataKey="time" stroke="#92a4c9" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#92a4c9" fontSize={12} tickLine={false} axisLine={false} domain={[20, 30]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                <XAxis dataKey="time" stroke="#a1a1aa" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis stroke="#a1a1aa" fontSize={12} tickLine={false} axisLine={false} domain={[20, 30]} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: '#101622', borderColor: '#232f48', borderRadius: '8px' }}
+                  contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: '8px' }}
                   itemStyle={{ color: '#fff' }}
                 />
-                <Area type="monotone" dataKey="temp" stroke="#1152d4" strokeWidth={3} fillOpacity={1} fill="url(#colorTemp)" />
+                <Area type="monotone" dataKey="temp" stroke="#ffffff" strokeWidth={3} fillOpacity={1} fill="url(#colorTemp)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -322,9 +322,9 @@ const Dashboard = () => {
       {/* Status Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Lighting Card */}
-        <div className="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+        <div className="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-white/50 transition-colors group">
           <div className="flex justify-between items-start">
-            <div className="bg-yellow-500/10 p-2.5 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-white transition-colors">
+            <div className="bg-yellow-500/10 p-2.5 rounded-lg text-yellow-500 group-hover:bg-yellow-500 group-hover:text-black transition-colors">
               <Sun className="w-6 h-6" />
             </div>
             <span className="bg-card-border px-2 py-0.5 rounded text-[10px] text-text-secondary font-medium uppercase">Daylight</span>
@@ -374,9 +374,9 @@ const Dashboard = () => {
 
 
         {/* Air Pump Card */}
-        <div className="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+        <div className="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-white/50 transition-colors group">
           <div className="flex justify-between items-start">
-            <div className="bg-cyan-500/10 p-2.5 rounded-lg text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-colors">
+            <div className="bg-cyan-500/10 p-2.5 rounded-lg text-cyan-500 group-hover:bg-cyan-500 group-hover:text-black transition-colors">
               <Wind className="w-6 h-6" />
             </div>
             {/* Toggle Switch (Admin Only) */}
@@ -392,25 +392,25 @@ const Dashboard = () => {
                   aria-checked={pumpActive}
                   disabled={sensors.temperature > 30}
                   onClick={handlePumpToggle}
-                  className={`w-11 h-6 rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-dark 
-                    ${pumpActive ? 'bg-primary' : 'bg-slate-700'} 
+                  className={`w-11 h-6 rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white focus:ring-offset-card-dark 
+                    ${pumpActive ? 'bg-white' : 'bg-zinc-700'} 
                     ${sensors.temperature > 30 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                   `}
                   title={sensors.temperature > 30 ? "Pump locked ON due to high temperature (>30°C)" : "Toggle Pump"}
                 >
-                  <span className={`absolute top-1 bg-white w-4 h-4 rounded-full transition-transform ${pumpActive ? 'right-1' : 'left-1'}`}></span>
+                  <span className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${pumpActive ? 'right-1 bg-black' : 'left-1 bg-white'}`}></span>
                 </button>
               </div>
             )}
           </div>
           <div>
             <h4 className="text-text-secondary text-sm font-medium mb-1">Air Pump Status</h4>
-            <div className={`text-lg font-bold flex items-center gap-1 ${pumpActive ? 'text-emerald-400' : 'text-slate-500'}`}>
+            <div className={`text-lg font-bold flex items-center gap-1 ${pumpActive ? 'text-emerald-400' : 'text-zinc-500'}`}>
               {pumpActive ? 'Active' : 'Inactive'}
               {pumpActive && <span className="block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>}
             </div>
             <p className="text-xs text-text-secondary mt-1">
-              Last Action: <span className="text-slate-300">
+              Last Action: <span className="text-zinc-400">
                 {sensors.last_pump_toggle 
                   ? new Date(sensors.last_pump_toggle).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
                   : 'Never'}
@@ -420,7 +420,7 @@ const Dashboard = () => {
         </div>
 
         {/* Feeding Schedule Card */}
-        <div className="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+        <div className="bg-card-dark border border-card-border rounded-xl p-5 flex flex-col gap-4 hover:border-white/50 transition-colors group">
           <div className="flex justify-between items-start">
             <div className="bg-purple-500/10 p-2.5 rounded-lg text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
               <Clock className="w-6 h-6" />
@@ -438,7 +438,7 @@ const Dashboard = () => {
                   {getTimeUntilFeeding(sensors.feeding?.next_feeding)}
               </p>
               <p className="text-[10px] text-text-secondary mt-0.5">
-                Last fed: <span className="text-slate-400">
+                Last fed: <span className="text-zinc-400">
                   {sensors.feeding?.last_fed 
                     ? new Date(sensors.feeding.last_fed).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
                     : 'Unknown'}
@@ -453,7 +453,7 @@ const Dashboard = () => {
                   <select 
                     value={sensors.feeding?.interval || '4h'}
                     onChange={(e) => handleFeedingSettingsChange('interval', e.target.value)}
-                    className="w-full bg-slate-900 border border-card-border rounded px-2 py-1 text-xs text-white focus:border-primary outline-none"
+                    className="w-full bg-zinc-900 py-1.5 px-2 text-xs text-white border border-zinc-700 rounded focus:border-white focus:ring-0 outline-none appearance-none"
                   >
                     <option value="30s">Every 30s</option>
                     <option value="1m">Every 1m</option>
@@ -464,7 +464,7 @@ const Dashboard = () => {
                     <option value="30m">Every 30m</option>
                   </select>
                 ) : (
-                  <div className="text-xs text-white bg-slate-800/50 px-2 py-1 rounded border border-card-border">
+                  <div className="text-xs text-white bg-zinc-800/50 px-2 py-1 rounded border border-card-border">
                     Every {(sensors.feeding?.interval || '4h')
                       .replace('h', ' Hours')
                       .replace('m', ' Minutes')
@@ -478,15 +478,15 @@ const Dashboard = () => {
                   <select 
                     value={sensors.feeding?.quantity || 1}
                     onChange={(e) => handleFeedingSettingsChange('quantity', parseInt(e.target.value))}
-                    className="w-full bg-slate-900 border border-card-border rounded px-2 py-1 text-xs text-white focus:border-primary outline-none"
+                    className="w-full bg-zinc-900 py-1.5 px-2 text-xs text-white border border-zinc-700 rounded focus:border-white focus:ring-0 outline-none appearance-none"
                   >
                     <option value="1">1 Scoop</option>
                     <option value="2">2 Scoops</option>
                     <option value="3">3 Scoops</option>
                   </select>
                 ) : (
-                  <div className="text-xs text-white bg-slate-800/50 px-2 py-1 rounded border border-card-border">
-                    <span className="font-bold text-primary">{sensors.feeding?.quantity}</span> Scoop{sensors.feeding?.quantity > 1 ? 's' : ''}
+                  <div className="text-xs text-white bg-zinc-800/50 px-2 py-1 rounded border border-card-border">
+                    <span className="font-bold text-white">{sensors.feeding?.quantity}</span> Scoop{sensors.feeding?.quantity > 1 ? 's' : ''}
                   </div>
                 )}
               </div>
@@ -495,7 +495,7 @@ const Dashboard = () => {
             {user.role === 'admin' && (
               <button 
                 onClick={handleFeed}
-                className="w-full py-1.5 px-3 bg-primary hover:bg-blue-600 active:bg-blue-700 text-white text-xs font-bold rounded transition-colors flex items-center justify-center gap-1 shadow-lg shadow-blue-900/20"
+                className="w-full py-1.5 px-3 bg-white hover:bg-zinc-200 active:bg-zinc-300 text-black text-xs font-bold rounded transition-colors flex items-center justify-center gap-1 shadow-lg shadow-white/5"
               >
                 <Utensils className="w-3 h-3" />
                 Feed Now

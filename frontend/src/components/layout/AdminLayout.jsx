@@ -35,57 +35,53 @@ const AdminLayout = ({ children }) => {
   return (
     <div className="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-x-hidden min-h-screen flex flex-col">
       {/* Top Navigation Bar */}
-      <div className="border-b border-card-border bg-card-dark/50 backdrop-blur-md sticky top-0 z-50">
+      <div className="border-b border-card-border bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <header className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/20 rounded-lg text-primary">
-                <Waves className="w-6 h-6" />
-              </div>
-              <div className="flex flex-col">
-                <h2 className="text-white text-lg font-bold leading-tight tracking-tight">AquaMonitor Pro</h2>
-                <div className="flex items-center gap-2">
-                   <span className={`text-[10px] uppercase font-bold tracking-wider w-fit px-1.5 rounded text-center ${user.role === 'admin' ? 'bg-primary/10 text-primary' : 'bg-slate-700/50 text-slate-400'}`}>
-                      {user.role === 'admin' ? 'Admin Access' : 'Viewer Access'}
-                   </span>
-                </div>
-              </div>
+            {/* Logo Section */}
+            <div>
+              <h2 className="text-slate-900 dark:text-white text-2xl font-light tracking-[0.25em] uppercase select-none">NERO</h2>
             </div>
-            <div className="flex items-center gap-3 relative">
-              <div className="h-6 w-px bg-card-border mx-1"></div>
-              
-              <div className="relative">
+            
+            {/* Right Logic */}
+            <div className="flex items-center gap-4">
+              {/* Modern Status Badge */}
+               <div className="hidden sm:flex items-center justify-center px-3 py-1 rounded-full border border-white/5 bg-white/5 backdrop-blur-sm">
+                  <div className={`w-1.5 h-1.5 rounded-full mr-2 ${user.role === 'admin' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-zinc-500'}`}></div>
+                  <span className="text-[9px] uppercase tracking-widest text-zinc-400 font-medium leading-none pt-[1px]">
+                    {user.role === 'admin' ? 'Admin' : 'Guest'}
+                  </span>
+               </div>
+
+              <div className="relative flex items-center">
                 {user.role === 'viewer' && !user.id ? (
                     <button 
                       onClick={() => navigate('/login')}
-                      className="flex items-center gap-2 h-10 px-4 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all text-sm font-medium"
+                      className="bg-white text-black hover:bg-slate-200 active:scale-95 transition-all text-[10px] uppercase font-bold tracking-widest px-5 py-2 rounded-full"
                     >
                       Sign In
                     </button>
                 ) : (
                    <button 
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className="flex items-center gap-2 h-10 px-3 rounded-lg hover:bg-card-border transition-colors group"
+                      className="group flex items-center gap-2 outline-none"
                     >
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-blue-400 flex items-center justify-center text-white font-bold text-xs">
+                      <div className="h-9 w-9 rounded-full bg-gradient-to-b from-slate-700 to-slate-800 border border-slate-600 group-hover:border-slate-500 transition-colors flex items-center justify-center text-white font-medium text-xs shadow-lg">
                         {user.name ? user.name.charAt(0).toUpperCase() : 'A'}
                       </div>
-                      <span className="text-sm font-medium text-white hidden sm:block group-hover:text-blue-200">{user.name || 'Admin'}</span>
-                      <ChevronDown className={`w-4 h-4 text-text-secondary transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
                 )}
 
                 {isDropdownOpen && (user.id) && (
-                  <div className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-card-dark border border-card-border shadow-xl py-1 z-50 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="px-4 py-3 border-b border-card-border mb-1">
-                      <p className="text-sm text-white font-medium">{user.name || 'User'}</p>
-                      <p className="text-xs text-text-secondary capitalize">{user.role}</p>
+                  <div className="absolute right-0 top-full mt-3 w-40 rounded-xl bg-[#0B1120] border border-white/10 shadow-2xl py-1 z-50 overflow-hidden">
+                    <div className="px-4 py-3 border-b border-white/5 bg-white/5">
+                      <p className="text-xs text-white font-medium truncate">{user.name || 'User'}</p>
                     </div>
                     <button 
                       onClick={handleSignOut}
-                      className="w-full text-left px-4 py-2 text-sm text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 transition-colors"
+                      className="w-full text-left px-4 py-2.5 text-xs font-medium text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 flex items-center gap-2 transition-colors"
                     >
-                      <LogOut className="w-4 h-4" />
+                      <LogOut className="w-3.5 h-3.5" />
                       Sign Out
                     </button>
                   </div>

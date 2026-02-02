@@ -8,12 +8,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        "primary": "#1152d4",
+        "primary": "#ffffff",
         "background-light": "#f6f6f8",
-        "background-dark": "#101622",
-        "card-dark": "#192233",
-        "card-border": "#232f48",
-        "text-secondary": "#92a4c9"
+        "background-dark": "#09090b", // Zinc 950
+        "card-dark": "#18181b",       // Zinc 900
+        "card-border": "#27272a",     // Zinc 800
+        "text-secondary": "#a1a1aa"   // Zinc 400
       },
       fontFamily: {
         "display": ["Inter", "sans-serif"],
