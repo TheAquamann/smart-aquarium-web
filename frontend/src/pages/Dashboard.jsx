@@ -382,7 +382,7 @@ const Dashboard = () => {
             {/* Toggle Switch (Admin Only) */}
             {user.role === 'admin' && (
               <div className="flex items-center gap-2">
-                {sensors.temperature > 30 && (
+                {sensors.temperature > 29 && (
                   <span className="text-[10px] text-rose-400 font-bold uppercase tracking-wider animate-pulse">
                     Safety Lock
                   </span>
@@ -390,13 +390,13 @@ const Dashboard = () => {
                 <button 
                   role="switch" 
                   aria-checked={pumpActive}
-                  disabled={sensors.temperature > 30}
+                  disabled={sensors.temperature > 29}
                   onClick={handlePumpToggle}
                   className={`w-11 h-6 rounded-full relative transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white focus:ring-offset-card-dark 
                     ${pumpActive ? 'bg-white' : 'bg-zinc-700'} 
-                    ${sensors.temperature > 30 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                    ${sensors.temperature > 29 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                   `}
-                  title={sensors.temperature > 30 ? "Pump locked ON due to high temperature (>30°C)" : "Toggle Pump"}
+                  title={sensors.temperature > 29 ? "Pump locked ON due to high temperature (>29°C)" : "Toggle Pump"}
                 >
                   <span className={`absolute top-1 w-4 h-4 rounded-full transition-transform ${pumpActive ? 'right-1 bg-black' : 'left-1 bg-white'}`}></span>
                 </button>
